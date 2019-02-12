@@ -13,6 +13,7 @@ const passport = require('passport');
 // console.log(jimmy); // Stewart - the variable name is jimmy, not james
 // console.log(bobby); // De Niro - the variable name is bobby, not robert
 const { router: usersRouter } = require('./users');
+const { router: momentsRouter } = require('./moments');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 
 mongoose.Promise = global.Promise;
@@ -25,7 +26,7 @@ const app = express();
 app.use(morgan('common'));
 
 // CORS
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
@@ -40,6 +41,8 @@ passport.use(jwtStrategy);
 
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
+// app.use('/api/new-moment', newMomentRouter);
+app.use('/api/moments', momentsRouter);
 
 const jwtAuth = passport.authenticate('jwt', { session: false });
 
@@ -59,16 +62,16 @@ app.use('*', (req, res) => {
 let server;
 
 function runServer(databaseUrl, port = PORT) {
-
   return new Promise((resolve, reject) => {
     mongoose.connect(databaseUrl, err => {
       if (err) {
         return reject(err);
       }
-      server = app.listen(port, () => {
-        console.log(`Your app is listening on port ${port}`);
-        resolve();
-      })
+      server = app
+        .listen(port, () => {
+          console.log(`Your app is listening on port ${port}`);
+          resolve();
+        })
         .on('error', err => {
           mongoose.disconnect();
           reject(err);
