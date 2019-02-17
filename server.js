@@ -4,21 +4,15 @@ const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
 const passport = require('passport');
+const cors = require('cors');
 
-// Here we use destructuring assignment with renaming so the two variables
-// called router (from ./users and ./auth) have different names
-// For example:
-// const actorSurnames = { james: "Stewart", robert: "De Niro" };
-// const { james: jimmy, robert: bobby } = actorSurnames;
-// console.log(jimmy); // Stewart - the variable name is jimmy, not james
-// console.log(bobby); // De Niro - the variable name is bobby, not robert
+// rename `router` from each file to new name for use here
 const { router: usersRouter } = require('./users');
 const { router: momentsRouter } = require('./moments');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 
 mongoose.Promise = global.Promise;
-
-const { PORT, DATABASE_URL } = require('./config');
+const { CLIENT_ORIGIN, PORT, DATABASE_URL } = require('./config');
 
 const app = express();
 
@@ -26,6 +20,12 @@ const app = express();
 app.use(morgan('common'));
 
 // CORS
+app.use(
+  cors({
+    origin: CLIENT_ORIGIN
+  })
+);
+
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
@@ -35,10 +35,12 @@ app.use(function(req, res, next) {
   }
   next();
 });
+//
 
 passport.use(localStrategy);
 passport.use(jwtStrategy);
 
+// ROUTES
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
 // app.use('/api/new-moment', newMomentRouter);
