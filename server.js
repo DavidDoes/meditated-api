@@ -6,25 +6,20 @@ const morgan = require('morgan');
 const passport = require('passport');
 const cors = require('cors');
 
+const { CLIENT_ORIGIN, PORT, DATABASE_URL } = require('./config');
 // rename `router` from each file to new name for use here
 const { router: usersRouter } = require('./users');
 const { router: momentsRouter } = require('./moments');
 const { router: authRouter, localStrategy, jwtStrategy } = require('./auth');
 
-mongoose.Promise = global.Promise;
-const { CLIENT_ORIGIN, PORT, DATABASE_URL } = require('./config');
-
 const app = express();
 
-// Logging
-app.use(morgan('common'));
-
 // CORS
-app.use(
-  cors({
-    origin: CLIENT_ORIGIN
-  })
-);
+// app.use(
+//   cors({
+//     origin: CLIENT_ORIGIN
+//   })
+// );
 
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -36,6 +31,11 @@ app.use(function(req, res, next) {
   next();
 });
 //
+
+mongoose.Promise = global.Promise;
+
+// Logging
+app.use(morgan('common'));
 
 passport.use(localStrategy);
 passport.use(jwtStrategy);
