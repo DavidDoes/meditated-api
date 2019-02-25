@@ -38,6 +38,9 @@ passport.use(jwtStrategy);
 app.use('/api/users/', usersRouter);
 app.use('/api/auth/', authRouter);
 // app.use('/api/new-moment', newMomentRouter);
+
+// PROTECTED ROUTES
+app.use('/api/new-moment', momentsRouter);
 app.use('/api/moments', momentsRouter);
 
 const jwtAuth = passport.authenticate('jwt', { session: false });

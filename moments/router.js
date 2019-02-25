@@ -66,11 +66,25 @@ router.put('/:id', jwtAuth, jsonParser, (req, res) => {
     return next(err);
   }
 
-  Moment.findByIdAndUpdate(id, updatedItem, { new: true })
+  const updatedItem = {
+    id: req.params.id,
+    minutes: req.body.minutes,
+    time: req.body.time,
+    location: req.body.location,
+    date: req.body.date,
+    mental: req.body.mental,
+    environmental: req.body.environmental,
+    userId: req.user.id
+  };
+
+  Moment.findByIdAndUpdate(req.params.id, updatedItem, { new: true })
     .then(updatedItem => {
+      console.log('UPDATEDITEM >>', updatedItem);
+      console.log('req.body:', req.body);
       res.status(201).json(updatedItem.serialize());
     })
     .catch(err => {
+      console.log('ERROR!');
       console.error(err);
       res.status(500).json({ error: 'Server error' });
     });

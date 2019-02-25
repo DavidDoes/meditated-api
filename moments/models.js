@@ -18,7 +18,7 @@ const MomentSchema = mongoose.Schema({
 MomentSchema.methods.serialize = function() {
   return {
     id: this._id,
-    minutes: this.time,
+    minutes: this.minutes,
     date: this.date,
     time: this.time,
     location: this.location,
