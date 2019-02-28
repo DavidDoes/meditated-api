@@ -79,50 +79,24 @@ router.put('/:id', jwtAuth, jsonParser, (req, res) => {
 
   Moment.findByIdAndUpdate(req.params.id, updatedItem, { new: true })
     .then(updatedItem => {
-      console.log('UPDATEDITEM >>', updatedItem);
-      console.log('req.body:', req.body);
       res.status(201).json(updatedItem.serialize());
     })
     .catch(err => {
-      console.log('ERROR!');
       console.error(err);
       res.status(500).json({ error: 'Server error' });
     });
 });
 
 // === DELETE Moment ===
-// router.delete('/:id', jwtAuth, (req, res) => {
-//   if (!mongoose.Types.ObjectId.isValid(req.user.id)) {
-//     const err = new Error('You do not have permission to delete this Moment.');
-//     err.status = 400;
-//     return next(err);
-//   }
-
-//   Moment.findByIdAndRemove(req.params.id)
-//     .then(() => {
-//       res.status(204).end();
-//     })
-//     .catch(err => {
-//       console.error(err);
-//       res.status(500).json({ error: 'Server error.' });
-//     });
-// });
-
-router.delete('/:id', (req, res, next) => {
-  const userId = req.user.id;
-  const momentId = req.params.id;
-
-  if (!mongoose.Types.ObjectId.isValid(profileId)) {
-    const err = new Error('The "id" is not valid');
-    err.status = 400;
-    return next(err);
-  }
-
-  Profile.findOneAndRemove({ _id: momentId, owner: userId })
+router.delete('/:id', (req, res) => {
+  Moment.findByIdAndRemove(req.params.id)
     .then(() => {
-      res.status(204).end();
+      res.status(204).json({ message: `Moment deleted successfully.` });
     })
-    .catch(err => next(err));
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({ error: 'Internal server error.' });
+    });
 });
 
 module.exports = { router };
