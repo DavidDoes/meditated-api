@@ -88,15 +88,12 @@ router.put('/:id', jwtAuth, jsonParser, (req, res) => {
 });
 
 // === DELETE Moment ===
-router.delete('/:id', (req, res) => {
-  Moment.findByIdAndRemove(req.params.id)
-    .then(() => {
-      res.status(204).json({ message: `Moment deleted successfully.` });
-    })
-    .catch(err => {
-      console.error(err);
-      res.status(500).json({ error: 'Internal server error.' });
+router.delete('/:id', (req, res, next) => {
+  Moment.findByIdAndDelete(req.params.id).then(() => {
+    return res.status(200).json({
+      message: 'Moment deleted successfully'
     });
+  });
 });
 
 module.exports = { router };
